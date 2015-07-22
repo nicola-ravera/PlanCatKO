@@ -1,0 +1,411 @@
+﻿
+@{
+    ViewBag.Title = "Misurazione planimetria catastale";
+}
+<style type="text/css">
+    .pull-right .dropdown-menu:after {
+        left: auto;
+        right: 13px;
+    }
+
+    .pull-right .dropdown-menu {
+        left: auto;
+        right: 0;
+    }
+
+    .nav-center {
+        margin: 0;
+        float: none;
+    }
+
+    .navbar-inner {
+        text-align: center;
+    }
+</style>
+
+    <!-- Modal consistenze-->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+     aria-hidden="true" data-bind="if: $data">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">Attributi della superficie tracciata</h4>
+            </div>
+            <div class="modal-body" data-bind="with: immagine().consistenzaAttiva()">
+                <div class="form-horizontal" role="form">
+                    <!--<%--                        <div class="form-group">
+                        <label for="inputScala" class="col-sm-4 control-label">
+                            scala
+                        </label>
+                        <div class="col-sm-3">
+                            <select class="form-control" id="inputScala" data-bind="value: scala">
+                                <option value="100">100</option>
+                                <option value="200">200</option>
+                                <option value="500">500</option>
+                            </select>
+                        </div>
+                    </div>--%>-->
+                    <div class="form-group" data-bind="validationElement: piano">
+                        <label for="inputPiano" class="col-sm-4 control-label">
+                            piano
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control" id="piano" placeholder="piano" data-bind="value: piano" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputDestinazione" class="col-sm-4 control-label">
+                            destinazione
+                        </label>
+                        <div class="col-sm-8">
+                            <select id="inputDestinazione" class="input-xs " data-bind="options: destinazioni, optionsText: 'nome', value: destinazione"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputUso" class="col-sm-4 control-label">
+                            uso
+                        </label>
+                        <div class="col-sm-8">
+                            <select data-bind="options: destinazione().usi, value: uso" class="form-control" id="inputUso"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputNote" class="col-sm-4 control-label">
+                            note
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="inputNote" placeholder="note" data-bind="value: note" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputPiano" class="col-sm-4 control-label">
+                            superficie
+                        </label>
+                        <div class="col-sm-3">
+                            <p class="form-control-static">
+                                <span id="area" data-bind="text: area().toFixed(1) + ' mq'"></span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="inputCoeff" class="col-sm-4 control-label">
+                            coefficiente di ragguaglio
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="number" step="0.05" class="form-control" id="inputragguaglio" placeholder="ragguaglio" data-bind="value: coeff" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="araRagguagliata" class="col-sm-4 control-label">
+                            superficie ragguagliata
+                        </label>
+                        <div class="col-sm-3">
+                            <p class="form-control-static">
+                                <span id="araRagguagliata" data-bind="text: areaRagguagliata().toFixed(1) + ' mq'"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bind="click: immagine().addConsistenza">
+                    OK
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- Modal scala-->
+<div class="modal fade" id="scalaModal" tabindex="-1" role="dialog" aria-labelledby="scalaModalLabel"
+     aria-hidden="true" data-bind="if: immagine().scaling">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="scalaModalLabel">Definisci la scala del disegno</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-horizontal" role="form">
+                    <div class="form-group">
+                        <label for="scala" class="col-sm-4 control-label">
+                            lunghezza della misura espressa in metri
+                        </label>
+                        <div class="col-sm-3">
+                            <input class="form-control" id="misuraCampione" type="number" data-bind="value: immagine().scaling().lunghezzaInMetri" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">
+                    OK
+                </button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<!-- Modal info-->
+<div class="modal fade" id="infoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">NanoCAD help</h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#info" data-toggle="tab">Info di base</a></li>
+                    <li><a href="#funzionalita" data-toggle="tab">Funzionalit&agrave;</a></li>
+                    <li><a href="#scalatura" data-toggle="tab">Scalatura</a></li>
+                </ul>
+                <div id='content' class="tab-content">
+                    <div class="tab-pane active" id="info">
+                        <div class="well">
+                            <p>NanoCAD &egrave; un tool ideato per la misurazione delle planimetrie catastali.</p>
+                            <p>Le precondizioni per l'utilizzo sono:</p>
+                            <ul>
+                                <li>il file di partenza deve essere un pdf</li>
+                                <li>il pdf deve contenere un'immagine tiff</li>
+                                <li>l'immagine tiff deve essere in bianco e nero (no toni di grigio)</li>
+                                <li>l'immagine tiff deve essere compressa in formato CCITTFAX4</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="funzionalita">
+                        <div class="well">
+                            <dl class="dl-horizontal">
+                                <dt>Avvio attivit&agrave;</dt>
+                                <dd>
+                                    Per iniziare la misurazione di una planimetria occorre uploadare il relativo file pdf tramite il tasto
+                                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-folder-open"></span></button>
+                                    della toolbar.
+                                </dd>
+                                <dt>Inizio poligono</dt>
+                                <dd>Per iniziare a tracciare una superficie fare click con il tasto sinistro del mouse sul vertice di interesse.</dd>
+                                <dt>Chiusura poligono</dt>
+                                <dd>Per chiudere un poligono &egrave; necessario cliccare con il tasto sinistro del mouse in prossimit&agrave; del vertice di partenza.</dd>
+                                <dt>Interruzione del disegno</dt>
+                                <dd>Per abbandonare il poligono in corso di tracciamento &egrave; necessario fare un click con il tasto destro del mouse in qualsiasi punto dell'area di disegno.</dd>
+                                <dt>Modifica attributi poligono</dt>
+                                <dd>
+                                    Per modificare gli attributi assegnati ad un'area (piano,uso,etc..) &egrave; necessario selezionare l'area dall'elenco di dettaglio delle superfici tracciate e cliccare il corrispondente tasto
+                                    <button type="button" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    .
+                                </dd>
+                                <dt>Eliminazione di un poligono</dt>
+                                <dd>
+                                    Per eliminare un poligono gi&agrave; tracciato &egrave; necessario selezionarlo dall'elenco di dettaglio delle superfici tracciate e cliccare il corrispondente tasto
+                                    <button type="button" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                                    .
+                                </dd>
+                                <dt>Reset del disegno</dt>
+                                <dd>
+                                    Per cancellare tutti i poligoni disegnati, cliccare il tasto
+                                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-remove"></span></button>
+                                    della toolbar.
+                                </dd>
+                                <dt>Zoom del disegno</dt>
+                                <dd>
+                                    Per aumentare o diminuire lo zoom del disegno, cliccare rispettivamente i tasti
+                                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-zoom-in"></span></button>
+                                    e
+                                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-zoom-out"></span></button>
+                                    della toolbar.
+                                </dd>
+                                <hr />
+                                <dt>Ritorno al menu principale</dt>
+                                <dd>
+                                    Per tornare al menu principale del portale, cliccare il tasto
+                                    <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-home"></span></button>
+                                    della toolbar.
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="scalatura">
+                        <div class="well">
+                            <p>Se il file pdf uploadato deriva direttamente dal sistema Sister, l'immagine estratta sar&agrave; in scala 1:200, con risoluzione 200dpi; in tal caso la scalatura di default del tool consente la misurazione diretta del disegno senza necessit&agrave; di ulteriori aggiustamenti.</p>
+                            <p>Se il disegno originale (o parte di esso) ha scala diversa da 1:200, ad esempio 1:100 o 1:500, &egrave; possibile impostare il valore della scala nella casella di testo presente vicino alla toolbar in alto.</p>
+                            <br />
+                            <p>In generale, le misurazioni sono calcolate prendendo come riferimento la risoluzione di 200dpi e la scala impostata nella apposita casella di testo.</p>
+                            <br />
+                            <p>
+                                In caso di necessit&agrave;, &egrave; possibile bypassare i riferimenti di cui sopra per introdurre una misura campione per il disegno; per procedere in tal senso &egrave; necessario cliccare il tasto
+                                <button type="button" class="btn btn-success"><span class="glyphicon glyphicon-screenshot"></span></button>
+                                , tracciare una linea in corrispondenza della misura conosciuta ed inserire il valore della misura in metri (utilizzare il puntino '.' come separatore per i decimali).
+                            </p>
+                            <p>La misura campione verr&agrave; rappresentata sul disegno e da quel momento ogni superficie tracciata utilizzer&agrave; la misura stessa come riferimento per il calcolo dell'area.</p>
+                            <p>Per ritornare alla scalatura di default &egrave; sufficiente cliccare nuovamente sul tasto della misura campione ed abbandonarne il tracciamento con clic del tasto destro.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.modal -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+        </button>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav">
+            <li>
+                <div class="btn-group">
+                    <!--<a class="btn btn-success" title="Torna al menu" href="/Backend/default.aspx">
+                        <span class="glyphicon glyphicon-home"></span>
+                    </a>-->
+                    <button type="button" id="button5" class="btn btn-success uploader" title="Nuova planimetria" data-bind="visible: immagine().url().length > 0">
+                        <span class="glyphicon glyphicon-folder-open"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" title="Zoom in" data-bind="click: immagine().zoomIn, visible: immagine().url().length > 0">
+                        <span class="glyphicon glyphicon-zoom-in"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" title="Zoom out" data-bind="click: immagine().zoomOut, visible: immagine().url().length > 0">
+                        <span class="glyphicon glyphicon-zoom-out"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" title="Misura campione" data-bind="click: immagine().setTuning, visible: immagine().url().length > 0">
+                        <span class="glyphicon glyphicon-screenshot"></span>
+                    </button>
+                    <button type="button" class="btn btn-success" title="Cancella tutto" data-bind="click: reset, visible: immagine().url().length > 0">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                    <button type="button" id="infoButton" class="btn btn-info" title="Info" data-toggle="modal" data-target="#infoModal">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    </button>
+                </div>
+            </li>
+            <li>&nbsp;</li>
+            <li data-bind="visible: immagine().url().length > 0">
+                <div class="btn-group">
+                    Scala
+                    <input id="scala" type="number" value="200" />
+                </div>
+            </li>
+            <li>&nbsp;</li>
+            <li data-bind="visible: immagine().url().length > 0">
+                <div class="btn-group">
+                    Zoom
+                    <span class="label label-info" data-bind="text: (immagine().zoomFactor() * 100).toFixed(0) + '%'"></span>
+                </div>
+            </li>
+
+        </ul>
+        <ul class="nav pull-right" data-bind="visible: immagine().url().length > 0">
+            <li class="dropdown">
+                <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                    <span class="label label-success " style="font-size: 1.7em;" data-bind="text: ' sup : ' + areaTotale().toFixed(1) + ' mq '"></span><strong class="caret"></strong>
+                </a>
+                <div class="dropdown-menu" style="padding: 15px;">
+                    <table class="table table-condensed  small" style="min-width: 450px;">
+                        <tr>
+                            <th>
+                                piano
+                            </th>
+                            <th>destinazione</th>
+                            <th>
+                                uso
+                            </th>
+                            <th>
+                                note
+                            </th>
+                            <th>
+                                sup
+                            </th>
+                            <th>
+                                coeff
+                            </th>
+                            <th></th>
+                        </tr>
+                        <!-- ko foreach: immagine().consistenze -->
+                        <tr data-bind="click: $parent.immagine().selectConsistenza, css: { danger: isSelected() === true }" style="cursor: pointer;" title="click per selezionare l'area">
+                            <td data-bind="text: piano"></td>
+                            <td data-bind="text: destinazione().nome"></td>
+                            <td data-bind="text: uso"></td>
+                            <td data-bind="text: note"></td>
+                            <td data-bind="text: area().toFixed(1)"></td>
+                            <td data-bind="text: coeff"></td>
+                            <td>
+                                <button type="button" class="btn btn-success btn-xs" data-bind="visible: isSelected() === true, click: $parent.immagine().editConsistenza" title="click per modificare gli attributi dell'area"><span class="glyphicon glyphicon-pencil"></span></button>
+                                <button type="button" class="btn btn-danger btn-xs" data-bind="visible: isSelected() === true, click: $parent.immagine().removeConsistenza" title="click per eliminare l'area"><span class="glyphicon glyphicon-remove"></span></button>
+                            </td>
+                        </tr>
+                        <!-- /ko -->
+                        <tr>
+                            <th colspan="5">
+                                Totale ragguagliato
+                            </th>
+                            <th class="pull-right" data-bind="text: areaTotale().toFixed(1)"></th>
+                        </tr>
+                    </table>
+                    <form target="_blank" action="/api/export" id="formExport" method="post">
+                        <input type="hidden" id="consistenze" name="consistenze" data-bind="value: toJSON" />
+                        <input type="submit" class="btn btn-success btn-sm btn-block" id="export" value="Esporta in csv" />
+                    </form>
+                    <!--<%--<pre data-bind="text: ko.toJSON(immagine().consistenze, null, 2)"></pre>--%>-->
+                </div>
+            </li>
+        </ul>
+    </div>
+    <!-- /.navbar-collapse -->
+</nav>
+<div class="container" data-bind="visible: immagine().url().length === 0">
+    <div class="row well well-lg">
+        <div id="splash" class="jumbotron">
+            <h2>NanoCAD</h2>
+            <h3>Misura le superfici di una planimetria catastale</h3>
+            <p>Per iniziare &egrave; necessario effettuare l'upload di una planimetria catastale in formato pdf.</p>
+            <hr />
+            <p><a class="btn btn-primary btn-lg uploader" role="button" id="splashUploader">Click qui per caricare una planimetria..</a></p>
+        </div>
+    </div>
+</div>
+<div data-bind="if: $data">
+    <canvas id="canvasImg" style="position: absolute; left: 0; top: 0; z-index: 0;" height="0"></canvas>
+    <canvas id="canvas" style="position: absolute; left: 0; top: 0; z-index: 1;" height="0"
+            data-bind="event: { click: immagine().canvasClick, mousemove: immagine().mouseMove, mousedown: immagine().mouseDown, contextmenu: immagine().contextMenu, keyup: immagine().keyUp }"></canvas>
+</div>
+<nav class="navbar navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="navbar-inner">
+        <div class="nav-center">
+            <small>Realizzato da </small>
+            <a href="http://www.mediarche.com">
+                <img src="http://papei.azurewebsites.net/Content/img/mediarche.gif" width="100" alt="mediarche">
+            </a>
+        </div>
+    </div>
+</nav>
+
+
+
+
+
+
+
+@section scripts{
+    <script type="text/javascript" src="/scripts/ajaxupload.js" lang="javascript"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/knockout/2.3.0/knockout-min.js"></script>
+<script type="text/javascript" src="/scripts/knockout.validation.js"></script>
+<script type="text/javascript" src="/scripts/viewModel.js"></script>
+<script type="text/javascript" src="/scripts/planimetria.js"></script>
+<script type="text/javascript" src="/scripts/destinazioni.js"></script>
+    }
+
